@@ -188,63 +188,6 @@ function App() {
 
   // AR画面のレンダリング
   const renderARScene = () => {
-    const arSceneHTML = `
-      <a-scene
-        vr-mode-ui="enabled: false;"
-        renderer="logarithmicDepthBuffer: true; colorManagement: true; antialias: true;"
-        embedded
-        arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: true; detectionMode: mono_and_matrix; matrixCodeType: 3x3; sourceWidth: 1280; sourceHeight: 720; displayWidth: 1280; displayHeight: 720; maxDetectionRate: 60; canvasWidth: 1280; canvasHeight: 720;"
-        id="arScene"
-      >
-        <!-- Pattern 0 -->
-        <a-marker id="custom-marker-0" type="pattern" url="./markers/pattern.patt">
-          <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
-          <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
-          <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
-          <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
-          <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
-        </a-marker>
-
-        <!-- Pattern 1 -->
-        <a-marker id="custom-marker-1" type="pattern" url="./markers/pattern1.patt">
-          <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
-          <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
-          <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
-          <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
-          <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
-        </a-marker>
-
-        <!-- Pattern 2 -->
-        <a-marker id="custom-marker-2" type="pattern" url="./markers/pattern2.patt">
-          <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
-          <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
-          <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
-          <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
-          <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
-        </a-marker>
-
-        <!-- Pattern 3 -->
-        <a-marker id="custom-marker-3" type="pattern" url="./markers/pattern3.patt">
-          <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
-          <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
-          <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
-          <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
-          <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
-        </a-marker>
-
-        <!-- Pattern 4 -->
-        <a-marker id="custom-marker-4" type="pattern" url="./markers/pattern4.patt">
-          <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
-          <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
-          <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
-          <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
-          <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
-        </a-marker>
-
-        <a-entity camera></a-entity>
-      </a-scene>
-    `
-
     return (
       <div className="ar-container">
         {/* コントロールボタン */}
@@ -294,7 +237,103 @@ function App() {
         </div>
 
         {/* A-Frame AR Scene */}
-        <div dangerouslySetInnerHTML={{ __html: arSceneHTML }} />
+          {/* @ts-expect-error A-Frame type definitions */}
+        <a-scene
+          vr-mode-ui="enabled: false;"
+          renderer="logarithmicDepthBuffer: true; colorManagement: true; antialias: true;"
+          embedded
+          arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: true; detectionMode: mono_and_matrix; matrixCodeType: 3x3; sourceWidth: 1280; sourceHeight: 720; displayWidth: 1280; displayHeight: 720; maxDetectionRate: 60; canvasWidth: 1280; canvasHeight: 720;"
+          id="arScene"
+        >
+          {/* Pattern 0 */}
+          {/* @ts-expect-error A-Frame type definitions */}
+          <a-marker id="custom-marker-0" type="pattern" url="./markers/pattern.patt">
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
+            {/* End of Pattern 0 marker */}
+          {/* Pattern 1 */}
+          {/* @ts-expect-error A-Frame type definitions */}
+          <a-marker id="custom-marker-1" type="pattern" url="./markers/pattern1.patt">
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
+            {/* End of Pattern 1 marker */}
+            {/* @ts-expect-error A-Frame type definitions */}
+          </a-marker>
+          {/* End of Pattern 1 marker */}
+
+          {/* Pattern 2 */}
+          {/* @ts-expect-error A-Frame type definitions */}
+          <a-marker id="custom-marker-2" type="pattern" url="./markers/pattern2.patt">
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
+            {/* End of Pattern 2 marker */}
+            {/* @ts-expect-error A-Frame type definitions */}
+          </a-marker>
+          {/* End of Pattern 2 marker */}
+
+          {/* Pattern 3 */}
+          {/* @ts-expect-error A-Frame type definitions */}
+          <a-marker id="custom-marker-3" type="pattern" url="./markers/pattern3.patt">
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
+            {/* End of Pattern 3 marker */}
+            {/* @ts-expect-error A-Frame type definitions */}
+          </a-marker>
+
+          {/* Pattern 4 */}
+          {/* @ts-expect-error A-Frame type definitions */}
+          <a-marker id="custom-marker-4" type="pattern" url="./markers/pattern4.patt">
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
+            {/* End of Pattern 4 marker */}
+            {/* @ts-expect-error A-Frame type definitions */}
+          </a-marker>
+          {/* End of Pattern 4 marker */}
+
+          {/* @ts-expect-error A-Frame type definitions */}
+          <a-entity camera></a-entity>
+          {/* @ts-expect-error A-Frame type definitions */}
+        </a-scene>
       </div>
     )
   }
