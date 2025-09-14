@@ -4,14 +4,14 @@
 
 ## 対応形式
 
-### 1. GLTF/GLB形式（推奨）
-- **ファイル拡張子**: `.gltf`, `.glb`
-- **A-Frame要素**: `<a-gltf-model>`
+### 1. glb/GLB形式（推奨）
+- **ファイル拡張子**: `.glb`, `.glb`
+- **A-Frame要素**: `<a-glb-model>`
 - **メリット**: 最新標準、アニメーション対応、軽量
 - **作成ツール**: Blender, Maya, 3ds Max, SketchUp
 
 ```html
-<a-gltf-model src="./models/object.gltf" scale="1 1 1" position="0 0.5 0"></a-gltf-model>
+<a-glb-model src="./models/object.glb" scale="1 1 1" position="0 0.5 0"></a-glb-model>
 ```
 
 ### 2. OBJ形式
@@ -38,18 +38,18 @@
 
 ```
 public/models/
-├── hiro-object.gltf          # Hiroマーカー用の3Dオブジェクト
+├── hiro-object.glb          # Hiroマーカー用の3Dオブジェクト
 ├── hiro-object.obj           # OBJ形式の場合
 ├── hiro-object.mtl           # OBJ用マテリアルファイル
-├── kanji-object.gltf         # Kanjiマーカー用の3Dオブジェクト
-├── pattern-object.gltf       # Patternマーカー用の3Dオブジェクト
+├── kanji-object.glb         # Kanjiマーカー用の3Dオブジェクト
+├── pattern-object.glb       # Patternマーカー用の3Dオブジェクト
 └── README.md                 # このファイル
 ```
 
 ## 推奨設定
 
 ### ファイルサイズ
-- **GLTF**: 1MB以下
+- **glb**: 1MB以下
 - **OBJ**: 2MB以下
 - **COLLADA**: 3MB以下
 

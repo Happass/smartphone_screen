@@ -150,7 +150,11 @@ function App() {
 
         // 3Dモデルの読み込み状態を監視
         const gltfModels = scene.querySelectorAll('a-gltf-model')
+        console.log(`Found ${gltfModels.length} GLTF/GLB models to monitor`)
+        
         gltfModels.forEach((model, index) => {
+          console.log(`Setting up listeners for model ${index + 1}`)
+          
           model.addEventListener('model-loaded', () => {
             console.log(`3Dモデル ${index + 1} 読み込み完了`)
             setModelStatus('3Dモデル読み込み完了')
@@ -159,6 +163,11 @@ function App() {
           model.addEventListener('error', (event: any) => {
             console.error(`3Dモデル ${index + 1} 読み込みエラー:`, event.detail)
             setModelStatus(`3Dモデル読み込みエラー: ${event.detail}`)
+          })
+          
+          // 追加のデバッグ情報
+          model.addEventListener('loaded', () => {
+            console.log(`Model ${index + 1} loaded event fired`)
           })
         })
 
@@ -245,13 +254,13 @@ function App() {
           arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: true; detectionMode: mono_and_matrix; matrixCodeType: 3x3; sourceWidth: 1280; sourceHeight: 720; displayWidth: 1280; displayHeight: 720; maxDetectionRate: 60; canvasWidth: 1280; canvasHeight: 720;"
           id="arScene"
         >
-          {/* Pattern 0 */}
-          {/* @ts-expect-error A-Frame type definitions */}
-          <a-marker id="custom-marker-0" type="pattern" url="./markers/pattern.patt">
-            {/* @ts-expect-error A-Frame type definitions */}
-            <a-gltf-model src="./models/scene.gltf" scale="0.0075 0.0075 0.0075" position="0 0.5 0"></a-gltf-model>
-            {/* @ts-expect-error A-Frame type definitions */}
-            <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
+           {/* Pattern 0 */}
+           {/* @ts-expect-error A-Frame type definitions */}
+           <a-marker id="custom-marker-0" type="pattern" url="./markers/pattern.patt">
+             {/* @ts-expect-error A-Frame type definitions */}
+             <a-gltf-model src="./models/scene.glb" scale="1.0 1.0 1.0" position="0 0.5 0"></a-gltf-model>
+             {/* @ts-expect-error A-Frame type definitions */}
+             <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="true"></a-box>
             {/* @ts-expect-error A-Frame type definitions */}
             <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
             {/* @ts-expect-error A-Frame type definitions */}
@@ -267,7 +276,7 @@ function App() {
           {/* @ts-expect-error A-Frame type definitions */}
           <a-marker id="custom-marker-1" type="pattern" url="./markers/pattern1.patt">
             {/* @ts-expect-error A-Frame type definitions */}
-            <a-gltf-model src="./models/scene.gltf" scale="0.0075 0.0075 0.0075" position="0 0.5 0"></a-gltf-model>
+            <a-gltf-model src="./models/scene.glb" scale="1.0 1.0 1.0" position="0 0.5 0"></a-gltf-model>
             {/* @ts-expect-error A-Frame type definitions */}
             <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
             {/* @ts-expect-error A-Frame type definitions */}
@@ -285,7 +294,7 @@ function App() {
           {/* @ts-expect-error A-Frame type definitions */}
           <a-marker id="custom-marker-2" type="pattern" url="./markers/pattern2.patt">
             {/* @ts-expect-error A-Frame type definitions */}
-            <a-gltf-model src="./models/scene.gltf" scale="0.0075 0.0075 0.0075" position="0 0.5 0"></a-gltf-model>
+            <a-gltf-model src="./models/scene.glb" scale="1.0 1.0 1.0" position="0 0.5 0"></a-gltf-model>
             {/* @ts-expect-error A-Frame type definitions */}
             <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
             {/* @ts-expect-error A-Frame type definitions */}
@@ -303,7 +312,7 @@ function App() {
           {/* @ts-expect-error A-Frame type definitions */}
           <a-marker id="custom-marker-3" type="pattern" url="./markers/pattern3.patt">
             {/* @ts-expect-error A-Frame type definitions */}
-            <a-gltf-model src="./models/scene.gltf" scale="0.0075 0.0075 0.0075" position="0 0.5 0"></a-gltf-model>
+            <a-gltf-model src="./models/scene.glb" scale="1.0 1.0 1.0" position="0 0.5 0"></a-gltf-model>
             {/* @ts-expect-error A-Frame type definitions */}
             <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
             {/* @ts-expect-error A-Frame type definitions */}
@@ -320,7 +329,7 @@ function App() {
           {/* @ts-expect-error A-Frame type definitions */}
           <a-marker id="custom-marker-4" type="pattern" url="./markers/pattern4.patt">
             {/* @ts-expect-error A-Frame type definitions */}
-            <a-gltf-model src="./models/scene.gltf" scale="0.0075 0.0075 0.0075" position="0 0.5 0"></a-gltf-model>
+            <a-gltf-model src="./models/scene.glb" scale="1.0 1.0 1.0" position="0 0.5 0"></a-gltf-model>
             {/* @ts-expect-error A-Frame type definitions */}
             <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
             {/* @ts-expect-error A-Frame type definitions */}

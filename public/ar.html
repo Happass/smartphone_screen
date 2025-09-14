@@ -255,7 +255,7 @@
             <!-- カスタムマーカー用のオブジェクト -->
             <a-marker id="custom-marker" type="pattern" url="./markers/pattern.patt">
                 <!-- 3Dモデル -->
-                <a-gltf-model src="./models/scene.gltf" scale="0.0075 0.0075 0.0075" position="0 0.5 0"></a-gltf-model>
+                <a-glb-model src="./models/scene.glb" scale="1.0 1.0 1.0" position="0 0.5 0"></a-glb-model>
                 
                 <!-- フォールバック用の基本形状 -->
                 <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
@@ -500,12 +500,12 @@
                 console.log('Pattern marker object3D visible:', customMarker.object3D.visible);
                 
                 // 3Dモデルにアニメーションを追加
-                const model = document.querySelector('#custom-marker a-gltf-model');
+                const model = document.querySelector('#custom-marker a-glb-model');
                 if (model) {
                     model.setAttribute('animation', 'property: rotation; to: 0 360 0; dur: 5000; easing: linear');
-                    console.log('Pattern GLTF model animation added');
+                    console.log('Pattern glb model animation added');
                 } else {
-                    console.log('Pattern GLTF model not found');
+                    console.log('Pattern glb model not found');
                     
                     // フォールバック形状を表示
                     const box = document.querySelector('#custom-marker a-box');
@@ -522,8 +522,8 @@
             });
 
             // 3Dモデルの読み込みエラーをキャッチ
-            const gltfModels = document.querySelectorAll('a-gltf-model');
-            gltfModels.forEach((model, index) => {
+            const glbModels = document.querySelectorAll('a-glb-model');
+            glbModels.forEach((model, index) => {
                 model.addEventListener('model-loaded', function() {
                     console.log(`3Dモデル ${index + 1} 読み込み完了`);
                 });
@@ -545,7 +545,7 @@
 
             // 5秒後に3Dモデルが読み込まれていない場合はフォールバックを表示
             setTimeout(() => {
-                gltfModels.forEach((model, index) => {
+                glbModels.forEach((model, index) => {
                     if (model.object3D.children.length === 0) {
                         console.log(`3Dモデル ${index + 1} が読み込まれていません。フォールバック形状を表示します。`);
                         const marker = model.closest('a-marker');
