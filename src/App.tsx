@@ -26,6 +26,8 @@ function App() {
   const [detectedMarkers, setDetectedMarkers] = useState('なし')
   const [cameraStatus, setCameraStatus] = useState('確認中...')
   const [modelStatus, setModelStatus] = useState('読み込み中...')
+  const [recognitionAccuracy, setRecognitionAccuracy] = useState('測定中...')
+  const [frameRate, setFrameRate] = useState(0)
   
 
   // カメラデバイスを取得する関数
@@ -33,11 +35,11 @@ function App() {
     try {
       const constraints = {
         video: {
-          width: { ideal: 640, max: 1280 },
-          height: { ideal: 480, max: 720 },
-          frameRate: { ideal: 30, max: 30 },
+          width: { ideal: 1280, max: 1920 },
+          height: { ideal: 720, max: 1080 },
+          frameRate: { ideal: 60, max: 60 },
           facingMode: isMobile() ? { ideal: 'environment' } : 'user',
-          aspectRatio: { ideal: 4/3 }
+          aspectRatio: { ideal: 16/9 }
         }
       }
       
@@ -59,11 +61,11 @@ function App() {
       const constraints = {
         video: {
           deviceId: { exact: cameraId },
-          width: { ideal: 640, max: 1280 },
-          height: { ideal: 480, max: 720 },
-          frameRate: { ideal: 30, max: 30 },
+          width: { ideal: 1280, max: 1920 },
+          height: { ideal: 720, max: 1080 },
+          frameRate: { ideal: 60, max: 60 },
           facingMode: isMobile() ? { ideal: 'environment' } : undefined,
-          aspectRatio: { ideal: 4/3 }
+          aspectRatio: { ideal: 16/9 }
         }
       }
       
@@ -114,6 +116,8 @@ function App() {
     setDetectedMarkers('なし')
     setCameraStatus('確認中...')
     setModelStatus('読み込み中...')
+    setRecognitionAccuracy('測定中...')
+    setFrameRate(0)
   }
 
   // AR.jsの初期化
@@ -124,6 +128,22 @@ function App() {
         scene.addEventListener('loaded', () => {
           console.log('AR.js scene loaded')
           setArStatus('AR.js 初期化完了')
+          
+          // テクスチャ品質の最適化
+          const renderer = (scene as any).renderer
+          if (renderer) {
+            renderer.textureQuality = 'high'
+            renderer.maxTextureSize = 2048
+            console.log('テクスチャ品質を最適化しました')
+          }
+
+          // 環境光の最適化
+          const camera = scene.querySelector('a-camera')
+          if (camera) {
+            camera.setAttribute('exposure', '1.0')
+            camera.setAttribute('toneMapping', 'ACESFilmicToneMapping')
+            console.log('環境光設定を最適化しました')
+          }
           
           // カメラ状態を確認
           const arjs = (scene as any).components.arjs
@@ -136,17 +156,64 @@ function App() {
 
         // マーカー認識の監視
         const markers = scene.querySelectorAll('a-marker')
+        let recognitionCount = 0
+        let totalFrames = 0
+        
         markers.forEach((marker, index) => {
-          marker.addEventListener('markerFound', () => {
+          marker.addEventListener('markerFound', (event: any) => {
             console.log(`マーカー ${index} 認識されました`)
             setDetectedMarkers(`マーカー ${index} 認識中`)
+            
+            // 認識精度の計算
+            if (event.detail && event.detail.confidence) {
+              const confidence = event.detail.confidence
+              setRecognitionAccuracy(`信頼度: ${(confidence * 100).toFixed(1)}%`)
+            } else {
+              // デフォルトの信頼度表示
+              setRecognitionAccuracy(`マーカー ${index} 認識中`)
+            }
+            recognitionCount++
           })
           
           marker.addEventListener('markerLost', () => {
             console.log(`マーカー ${index} 見失いました`)
             setDetectedMarkers('なし')
+            setRecognitionAccuracy('マーカー待機中...')
           })
         })
+
+        // フレームレート監視
+        let frameCount = 0
+        let lastTime = performance.now()
+        const frameRateInterval = setInterval(() => {
+          const currentTime = performance.now()
+          const deltaTime = currentTime - lastTime
+          const currentFrameRate = Math.round((frameCount * 1000) / deltaTime)
+          setFrameRate(currentFrameRate)
+          
+          // 認識精度の計算
+          if (totalFrames > 0) {
+            const accuracy = (recognitionCount / totalFrames) * 100
+            setRecognitionAccuracy(`認識率: ${accuracy.toFixed(1)}%`)
+          }
+          
+          // リセット
+          frameCount = 0
+          lastTime = currentTime
+        }, 1000)
+
+        // フレームカウンター
+        const countFrame = () => {
+          frameCount++
+          totalFrames++
+        }
+        
+        // アニメーションループでフレームをカウント
+        const animate = () => {
+          countFrame()
+          requestAnimationFrame(animate)
+        }
+        animate()
 
         // 3Dモデルの読み込み状態を監視
         const gltfModels = scene.querySelectorAll('a-gltf-model')
@@ -185,11 +252,13 @@ function App() {
           } else {
             setDetectedMarkers('なし')
           }
-        }, 200)
+        }, 100)
 
         // クリーンアップ
         return () => {
           clearInterval(checkMarkers)
+          clearInterval(frameRateInterval)
+          // アニメーションループは自動的に停止される
         }
       }
     }
@@ -243,40 +312,63 @@ function App() {
           <div>認識されたマーカー: {detectedMarkers}</div>
           <div>カメラ状態: {cameraStatus}</div>
           <div>3Dモデル状態: {modelStatus}</div>
+          <div>認識精度: {recognitionAccuracy}</div>
+          <div>フレームレート: {frameRate} FPS</div>
         </div>
 
         {/* A-Frame AR Scene */}
           {/* @ts-expect-error A-Frame type definitions */}
         <a-scene
           vr-mode-ui="enabled: false;"
-          renderer="logarithmicDepthBuffer: false; colorManagement: false; antialias: false;"
+          renderer="logarithmicDepthBuffer: false; colorManagement: false; antialias: false; textureQuality: high;"
           embedded
-          arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; detectionMode: mono; matrixCodeType: 3x3; sourceWidth: 640; sourceHeight: 480; displayWidth: 640; displayHeight: 480; maxDetectionRate: 30; canvasWidth: 640; canvasHeight: 480;"
+          arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: true; detectionMode: mono; matrixCodeType: 3x3; sourceWidth: 1280; sourceHeight: 720; displayWidth: 1280; displayHeight: 720; maxDetectionRate: 60; canvasWidth: 1280; canvasHeight: 720;"
           id="arScene"
         >
            {/* Pattern 0 */}
            {/* @ts-expect-error A-Frame type definitions */}
-           <a-marker id="custom-marker-0" type="pattern" url="/markers/pattern1.patt">
+            <a-marker id="custom-marker-0" type="pattern" url="/markers/pattern1.patt" 
+              smooth="true" 
+              smoothCount="10" 
+              smoothTolerance="0.01" 
+              smoothThreshold="5"
+              emitevents="true"
+              size="1"
+              minConfidence="0.6">
+              {/* @ts-expect-error A-Frame type definitions */}
+              <a-gltf-model src="/models/scene.glb" scale="0.5 0.5 0.5" position="0 1 0"></a-gltf-model>
+              {/* @ts-expect-error A-Frame type definitions */}
+           </a-marker>
+
+            {/* Pattern 1 */}
+            {/* @ts-expect-error A-Frame type definitions */}
+            <a-marker id="custom-marker-1" type="pattern" url="/markers/pattern2.patt"
+              smooth="true" 
+              smoothCount="10" 
+              smoothTolerance="0.01" 
+              smoothThreshold="5"
+              emitevents="true"
+              size="1"
+              minConfidence="0.6">
              {/* @ts-expect-error A-Frame type definitions */}
              <a-gltf-model src="/models/scene.glb" scale="0.5 0.5 0.5" position="0 1 0"></a-gltf-model>
              {/* @ts-expect-error A-Frame type definitions */}
-          </a-marker>
+           </a-marker>
 
-           {/* Pattern 1 */}
-           {/* @ts-expect-error A-Frame type definitions */}
-           <a-marker id="custom-marker-1" type="pattern" url="/markers/pattern2.patt">
+            {/* Pattern 2 */}
             {/* @ts-expect-error A-Frame type definitions */}
-            <a-gltf-model src="/models/scene.glb" scale="0.5 0.5 0.5" position="0 1 0"></a-gltf-model>
-            {/* @ts-expect-error A-Frame type definitions */}
-          </a-marker>
-
-           {/* Pattern 2 */}
-           {/* @ts-expect-error A-Frame type definitions */}
-           <a-marker id="custom-marker-2" type="pattern" url="/markers/pattern3.patt">
-            {/* @ts-expect-error A-Frame type definitions */}
-            <a-gltf-model src="/models/scene.glb" scale="0.5 0.5 0.5" position="0 1 0"></a-gltf-model>
-            {/* @ts-expect-error A-Frame type definitions */}
-          </a-marker>
+            <a-marker id="custom-marker-2" type="pattern" url="/markers/pattern3.patt"
+              smooth="true" 
+              smoothCount="10" 
+              smoothTolerance="0.01" 
+              smoothThreshold="5"
+              emitevents="true"
+              size="1"
+              minConfidence="0.6">
+             {/* @ts-expect-error A-Frame type definitions */}
+             <a-gltf-model src="/models/scene.glb" scale="0.5 0.5 0.5" position="0 1 0"></a-gltf-model>
+             {/* @ts-expect-error A-Frame type definitions */}
+           </a-marker>
           {/* @ts-expect-error A-Frame type definitions */}
           <a-entity camera></a-entity>
           {/* @ts-expect-error A-Frame type definitions */}
