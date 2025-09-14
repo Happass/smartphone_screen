@@ -251,98 +251,32 @@ function App() {
           vr-mode-ui="enabled: false;"
           renderer="logarithmicDepthBuffer: false; colorManagement: false; antialias: false;"
           embedded
-          arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; detectionMode: mono; matrixCodeType: 3x3; sourceWidth: 1280; sourceHeight: 960; displayWidth: 1280; displayHeight: 720; maxDetectionRate: 60; canvasWidth: 640; canvasHeight: 480;"
+          arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; detectionMode: mono; matrixCodeType: 3x3; sourceWidth: 640; sourceHeight: 480; displayWidth: 640; displayHeight: 480; maxDetectionRate: 30; canvasWidth: 640; canvasHeight: 480;"
           id="arScene"
         >
            {/* Pattern 0 */}
            {/* @ts-expect-error A-Frame type definitions */}
-           <a-marker id="custom-marker-0" type="pattern" url="./markers/pattern.patt">
+           <a-marker id="custom-marker-0" type="pattern" url="/markers/pattern1.patt">
              {/* @ts-expect-error A-Frame type definitions */}
-             <a-gltf-model src="./models/scene.glb" scale="1.0 1.0 1.0" position="0 0.5 0"></a-gltf-model>
+             <a-gltf-model src="/models/scene.glb" scale="0.5 0.5 0.5" position="0 1 0"></a-gltf-model>
              {/* @ts-expect-error A-Frame type definitions */}
-             <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="true"></a-box>
-            {/* @ts-expect-error A-Frame type definitions */}
-            <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
-            {/* @ts-expect-error A-Frame type definitions */}
-            <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
-            {/* @ts-expect-error A-Frame type definitions */}
-            <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
-            {/* End of Pattern 0 marker */}
-            {/* @ts-expect-error A-Frame type definitions */}
           </a-marker>
-          {/* End of Pattern 0 marker */}
 
-          {/* Pattern 1 */}
-          {/* @ts-expect-error A-Frame type definitions */}
-          <a-marker id="custom-marker-1" type="pattern" url="./markers/pattern1.patt">
+           {/* Pattern 1 */}
+           {/* @ts-expect-error A-Frame type definitions */}
+           <a-marker id="custom-marker-1" type="pattern" url="/markers/pattern2.patt">
             {/* @ts-expect-error A-Frame type definitions */}
-            <a-gltf-model src="./models/scene.glb" scale="1.0 1.0 1.0" position="0 0.5 0"></a-gltf-model>
-            {/* @ts-expect-error A-Frame type definitions */}
-            <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
-            {/* @ts-expect-error A-Frame type definitions */}
-            <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
-            {/* @ts-expect-error A-Frame type definitions */}
-            <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
-            {/* @ts-expect-error A-Frame type definitions */}
-            <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
-            {/* End of Pattern 1 marker */}
-            {/* @ts-expect-error A-Frame type definitions */}
-          </a-marker>
-          {/* End of Pattern 1 marker */}
-
-          {/* Pattern 2 */}
-          {/* @ts-expect-error A-Frame type definitions */}
-          <a-marker id="custom-marker-2" type="pattern" url="./markers/pattern2.patt">
-            {/* @ts-expect-error A-Frame type definitions */}
-            <a-gltf-model src="./models/scene.glb" scale="1.0 1.0 1.0" position="0 0.5 0"></a-gltf-model>
-            {/* @ts-expect-error A-Frame type definitions */}
-            <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
-            {/* @ts-expect-error A-Frame type definitions */}
-            <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
-            {/* @ts-expect-error A-Frame type definitions */}
-            <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
-            {/* @ts-expect-error A-Frame type definitions */}
-            <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
-            {/* End of Pattern 2 marker */}
-            {/* @ts-expect-error A-Frame type definitions */}
-          </a-marker>
-          {/* End of Pattern 2 marker */}
-
-          {/* Pattern 3 */}
-          {/* @ts-expect-error A-Frame type definitions */}
-          <a-marker id="custom-marker-3" type="pattern" url="./markers/pattern3.patt">
-            {/* @ts-expect-error A-Frame type definitions */}
-            <a-gltf-model src="./models/scene.glb" scale="1.0 1.0 1.0" position="0 0.5 0"></a-gltf-model>
-            {/* @ts-expect-error A-Frame type definitions */}
-            <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
-            {/* @ts-expect-error A-Frame type definitions */}
-            <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
-            {/* @ts-expect-error A-Frame type definitions */}
-            <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
-            {/* @ts-expect-error A-Frame type definitions */}
-            <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
-            {/* End of Pattern 3 marker */}
+            <a-gltf-model src="/models/scene.glb" scale="0.5 0.5 0.5" position="0 1 0"></a-gltf-model>
             {/* @ts-expect-error A-Frame type definitions */}
           </a-marker>
 
-          {/* Pattern 4 */}
-          {/* @ts-expect-error A-Frame type definitions */}
-          <a-marker id="custom-marker-4" type="pattern" url="./markers/pattern4.patt">
+           {/* Pattern 2 */}
+           {/* @ts-expect-error A-Frame type definitions */}
+           <a-marker id="custom-marker-2" type="pattern" url="/markers/pattern3.patt">
             {/* @ts-expect-error A-Frame type definitions */}
-            <a-gltf-model src="./models/scene.glb" scale="1.0 1.0 1.0" position="0 0.5 0"></a-gltf-model>
-            {/* @ts-expect-error A-Frame type definitions */}
-            <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
-            {/* @ts-expect-error A-Frame type definitions */}
-            <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
-            {/* @ts-expect-error A-Frame type definitions */}
-            <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
-            {/* @ts-expect-error A-Frame type definitions */}
-            <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
-            {/* End of Pattern 4 marker */}
+            <a-gltf-model src="/models/scene.glb" scale="0.5 0.5 0.5" position="0 1 0"></a-gltf-model>
             {/* @ts-expect-error A-Frame type definitions */}
           </a-marker>
-          {/* End of Pattern 4 marker */}
-
           {/* @ts-expect-error A-Frame type definitions */}
           <a-entity camera></a-entity>
           {/* @ts-expect-error A-Frame type definitions */}
@@ -406,21 +340,21 @@ function App() {
       
       <div className="flex justify-center gap-4">
         <a 
-          href="./markers/pattern.patt" 
+          href="/markers/pattern.patt" 
           target="_blank"
           className="text-primary hover:text-primary/80 underline transition-colors duration-200"
         >
           Pattern 0 マーカーをダウンロード
         </a>
         <a 
-          href="./markers/pattern1.patt" 
+          href="/markers/pattern1.patt" 
           target="_blank"
           className="text-primary hover:text-primary/80 underline transition-colors duration-200"
         >
           Pattern 1 マーカーをダウンロード
         </a>
         <a 
-          href="./markers/pattern2.patt" 
+          href="/markers/pattern2.patt" 
           target="_blank"
           className="text-primary hover:text-primary/80 underline transition-colors duration-200"
         >
