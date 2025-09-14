@@ -246,7 +246,7 @@ function App() {
                 
                 <!-- Pattern 0 -->
                 <a-marker id="custom-marker-0" type="pattern" url="./markers/pattern.patt">
-                  <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
+                  <a-gltf-model src="./models/scene.gltf" scale="0.0075 0.0075 0.0075" position="0 0.5 0"></a-gltf-model>
                   <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
                   <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
                   <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
@@ -255,7 +255,7 @@ function App() {
 
                 <!-- Pattern 1 -->
                 <a-marker id="custom-marker-1" type="pattern" url="./markers/pattern1.patt">
-                  <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
+                  <a-gltf-model src="./models/scene.gltf" scale="0.0075 0.0075 0.0075" position="0 0.5 0"></a-gltf-model>
                   <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
                   <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
                   <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
@@ -264,7 +264,7 @@ function App() {
 
                 <!-- Pattern 2 -->
                 <a-marker id="custom-marker-2" type="pattern" url="./markers/pattern2.patt">
-                  <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
+                  <a-gltf-model src="./models/scene.gltf" scale="0.0075 0.0075 0.0075" position="0 0.5 0"></a-gltf-model>
                   <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
                   <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
                   <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
@@ -273,7 +273,7 @@ function App() {
 
                 <!-- Pattern 3 -->
                 <a-marker id="custom-marker-3" type="pattern" url="./markers/pattern3.patt">
-                  <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
+                  <a-gltf-model src="./models/scene.gltf" scale="0.0075 0.0075 0.0075" position="0 0.5 0"></a-gltf-model>
                   <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
                   <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
                   <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
@@ -282,7 +282,7 @@ function App() {
 
                 <!-- Pattern 4 -->
                 <a-marker id="custom-marker-4" type="pattern" url="./markers/pattern4.patt">
-                  <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
+                  <a-gltf-model src="./models/scene.gltf" scale="0.0075 0.0075 0.0075" position="0 0.5 0"></a-gltf-model>
                   <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
                   <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
                   <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
