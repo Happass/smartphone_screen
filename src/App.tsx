@@ -33,11 +33,11 @@ function App() {
     try {
       const constraints = {
         video: {
-          width: { ideal: 1280, max: 1920 },
-          height: { ideal: 720, max: 1080 },
-          frameRate: { ideal: 30, max: 60 },
+          width: { ideal: 640, max: 1280 },
+          height: { ideal: 480, max: 720 },
+          frameRate: { ideal: 30, max: 30 },
           facingMode: isMobile() ? { ideal: 'environment' } : 'user',
-          aspectRatio: { ideal: 16/9 }
+          aspectRatio: { ideal: 4/3 }
         }
       }
       
@@ -59,11 +59,11 @@ function App() {
       const constraints = {
         video: {
           deviceId: { exact: cameraId },
-          width: { ideal: 1280, max: 1920 },
-          height: { ideal: 720, max: 1080 },
-          frameRate: { ideal: 30, max: 60 },
+          width: { ideal: 640, max: 1280 },
+          height: { ideal: 480, max: 720 },
+          frameRate: { ideal: 30, max: 30 },
           facingMode: isMobile() ? { ideal: 'environment' } : undefined,
-          aspectRatio: { ideal: 16/9 }
+          aspectRatio: { ideal: 4/3 }
         }
       }
       
@@ -185,7 +185,7 @@ function App() {
           } else {
             setDetectedMarkers('なし')
           }
-        }, 1000)
+        }, 200)
 
         // クリーンアップ
         return () => {
@@ -249,9 +249,9 @@ function App() {
           {/* @ts-expect-error A-Frame type definitions */}
         <a-scene
           vr-mode-ui="enabled: false;"
-          renderer="logarithmicDepthBuffer: true; colorManagement: true; antialias: true;"
+          renderer="logarithmicDepthBuffer: false; colorManagement: false; antialias: false;"
           embedded
-          arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: true; detectionMode: mono_and_matrix; matrixCodeType: 3x3; sourceWidth: 1280; sourceHeight: 720; displayWidth: 1280; displayHeight: 720; maxDetectionRate: 60; canvasWidth: 1280; canvasHeight: 720;"
+          arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; detectionMode: mono; matrixCodeType: 3x3; sourceWidth: 640; sourceHeight: 480; displayWidth: 640; displayHeight: 480; maxDetectionRate: 30; canvasWidth: 640; canvasHeight: 480;"
           id="arScene"
         >
            {/* Pattern 0 */}
