@@ -259,6 +259,10 @@ function App() {
             {/* @ts-expect-error A-Frame type definitions */}
             <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
             {/* End of Pattern 0 marker */}
+            {/* @ts-expect-error A-Frame type definitions */}
+          </a-marker>
+          {/* End of Pattern 0 marker */}
+
           {/* Pattern 1 */}
           {/* @ts-expect-error A-Frame type definitions */}
           <a-marker id="custom-marker-1" type="pattern" url="./markers/pattern1.patt">
