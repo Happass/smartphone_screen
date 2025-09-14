@@ -251,7 +251,7 @@ function App() {
           vr-mode-ui="enabled: false;"
           renderer="logarithmicDepthBuffer: false; colorManagement: false; antialias: false;"
           embedded
-          arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; detectionMode: mono; matrixCodeType: 3x3; sourceWidth: 640; sourceHeight: 480; displayWidth: 640; displayHeight: 480; maxDetectionRate: 30; canvasWidth: 640; canvasHeight: 480;"
+          arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; detectionMode: mono; matrixCodeType: 3x3; sourceWidth: 1280; sourceHeight: 960; displayWidth: 1280; displayHeight: 720; maxDetectionRate: 60; canvasWidth: 640; canvasHeight: 480;"
           id="arScene"
         >
            {/* Pattern 0 */}
