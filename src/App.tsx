@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-
 
 // モバイルデバイスかどうかを判定
 const isMobile = () => {
@@ -20,11 +19,14 @@ interface CameraDevice {
 function App() {
   const [showAR, setShowAR] = useState(false)
   const [availableCameras, setAvailableCameras] = useState<CameraDevice[]>([])
+  const [currentCameraId, setCurrentCameraId] = useState<string | null>(null)
   const [showCameraSelector, setShowCameraSelector] = useState(false)
   const [arStatus, setArStatus] = useState('初期化中...')
   const [detectedMarkers, setDetectedMarkers] = useState('なし')
   const [cameraStatus, setCameraStatus] = useState('確認中...')
   const [modelStatus, setModelStatus] = useState('読み込み中...')
+  
+  const sceneRef = useRef<HTMLDivElement>(null)
 
   // カメラデバイスを取得する関数
   const getCameraDevices = async () => {
@@ -66,6 +68,7 @@ function App() {
       }
       
       const stream = await navigator.mediaDevices.getUserMedia(constraints)
+      setCurrentCameraId(cameraId)
       setShowCameraSelector(false)
       
       // AR.jsのカメラを更新
@@ -234,66 +237,60 @@ function App() {
         </div>
 
         {/* A-Frame AR Scene */}
-        <div 
-          dangerouslySetInnerHTML={{
-            __html: `
-              <a-scene
-                vr-mode-ui="enabled: false;"
-                renderer="logarithmicDepthBuffer: true; colorManagement: true; antialias: true;"
-                embedded
-                arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: true; detectionMode: mono_and_matrix; matrixCodeType: 3x3; sourceWidth: 1280; sourceHeight: 720; displayWidth: 1280; displayHeight: 720; maxDetectionRate: 60; canvasWidth: 1280; canvasHeight: 720;"
-                id="arScene">
-                
-                <!-- Pattern 0 -->
-                <a-marker id="custom-marker-0" type="pattern" url="./markers/pattern.patt">
-                  <a-gltf-model src="./models/scene.gltf" scale="0.0075 0.0075 0.0075" position="0 0.5 0"></a-gltf-model>
-                  <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
-                  <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
-                  <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
-                  <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
-                </a-marker>
+        <a-scene
+          vr-mode-ui="enabled: false;"
+          renderer="logarithmicDepthBuffer: true; colorManagement: true; antialias: true;"
+          embedded
+          arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: true; detectionMode: mono_and_matrix; matrixCodeType: 3x3; sourceWidth: 1280; sourceHeight: 720; displayWidth: 1280; displayHeight: 720; maxDetectionRate: 60; canvasWidth: 1280; canvasHeight: 720;"
+          id="arScene"
+        >
+          {/* Pattern 0 */}
+          <a-marker id="custom-marker-0" type="pattern" url="./markers/pattern.patt">
+            <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
+            <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
+            <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
+            <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
+            <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
+          </a-marker>
 
-                <!-- Pattern 1 -->
-                <a-marker id="custom-marker-1" type="pattern" url="./markers/pattern1.patt">
-                  <a-gltf-model src="./models/scene.gltf" scale="0.0075 0.0075 0.0075" position="0 0.5 0"></a-gltf-model>
-                  <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
-                  <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
-                  <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
-                  <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
-                </a-marker>
+          {/* Pattern 1 */}
+          <a-marker id="custom-marker-1" type="pattern" url="./markers/pattern1.patt">
+            <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
+            <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
+            <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
+            <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
+            <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
+          </a-marker>
 
-                <!-- Pattern 2 -->
-                <a-marker id="custom-marker-2" type="pattern" url="./markers/pattern2.patt">
-                  <a-gltf-model src="./models/scene.gltf" scale="0.0075 0.0075 0.0075" position="0 0.5 0"></a-gltf-model>
-                  <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
-                  <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
-                  <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
-                  <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
-                </a-marker>
+          {/* Pattern 2 */}
+          <a-marker id="custom-marker-2" type="pattern" url="./markers/pattern2.patt">
+            <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
+            <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
+            <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
+            <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
+            <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
+          </a-marker>
 
-                <!-- Pattern 3 -->
-                <a-marker id="custom-marker-3" type="pattern" url="./markers/pattern3.patt">
-                  <a-gltf-model src="./models/scene.gltf" scale="0.0075 0.0075 0.0075" position="0 0.5 0"></a-gltf-model>
-                  <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
-                  <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
-                  <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
-                  <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
-                </a-marker>
+          {/* Pattern 3 */}
+          <a-marker id="custom-marker-3" type="pattern" url="./markers/pattern3.patt">
+            <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
+            <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
+            <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
+            <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
+            <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
+          </a-marker>
 
-                <!-- Pattern 4 -->
-                <a-marker id="custom-marker-4" type="pattern" url="./markers/pattern4.patt">
-                  <a-gltf-model src="./models/scene.gltf" scale="0.0075 0.0075 0.0075" position="0 0.5 0"></a-gltf-model>
-                  <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
-                  <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
-                  <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
-                  <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
-                </a-marker>
+          {/* Pattern 4 */}
+          <a-marker id="custom-marker-4" type="pattern" url="./markers/pattern4.patt">
+            <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
+            <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
+            <a-sphere position="1 1 0" material="color: blue;" radius="0.3" visible="false"></a-sphere>
+            <a-cylinder position="-1 1 0" material="color: green;" radius="0.3" height="1" visible="false"></a-cylinder>
+            <a-cone position="0 2 0" material="color: yellow;" radius-bottom="0.5" height="1" visible="false"></a-cone>
+          </a-marker>
 
-                <a-entity camera></a-entity>
-              </a-scene>
-            `
-          }}
-        />
+          <a-entity camera></a-entity>
+        </a-scene>
       </div>
     )
   }
