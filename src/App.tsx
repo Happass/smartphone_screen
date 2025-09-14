@@ -249,7 +249,7 @@ function App() {
           {/* @ts-expect-error A-Frame type definitions */}
           <a-marker id="custom-marker-0" type="pattern" url="./markers/pattern.patt">
             {/* @ts-expect-error A-Frame type definitions */}
-            <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
+            <a-gltf-model src="./models/scene.gltf" scale="0.0075 0.0075 0.0075" position="0 0.5 0"></a-gltf-model>
             {/* @ts-expect-error A-Frame type definitions */}
             <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
             {/* @ts-expect-error A-Frame type definitions */}
@@ -267,7 +267,7 @@ function App() {
           {/* @ts-expect-error A-Frame type definitions */}
           <a-marker id="custom-marker-1" type="pattern" url="./markers/pattern1.patt">
             {/* @ts-expect-error A-Frame type definitions */}
-            <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
+            <a-gltf-model src="./models/scene.gltf" scale="0.0075 0.0075 0.0075" position="0 0.5 0"></a-gltf-model>
             {/* @ts-expect-error A-Frame type definitions */}
             <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
             {/* @ts-expect-error A-Frame type definitions */}
@@ -285,7 +285,7 @@ function App() {
           {/* @ts-expect-error A-Frame type definitions */}
           <a-marker id="custom-marker-2" type="pattern" url="./markers/pattern2.patt">
             {/* @ts-expect-error A-Frame type definitions */}
-            <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
+            <a-gltf-model src="./models/scene.gltf" scale="0.0075 0.0075 0.0075" position="0 0.5 0"></a-gltf-model>
             {/* @ts-expect-error A-Frame type definitions */}
             <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
             {/* @ts-expect-error A-Frame type definitions */}
@@ -303,7 +303,7 @@ function App() {
           {/* @ts-expect-error A-Frame type definitions */}
           <a-marker id="custom-marker-3" type="pattern" url="./markers/pattern3.patt">
             {/* @ts-expect-error A-Frame type definitions */}
-            <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
+            <a-gltf-model src="./models/scene.gltf" scale="0.0075 0.0075 0.0075" position="0 0.5 0"></a-gltf-model>
             {/* @ts-expect-error A-Frame type definitions */}
             <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
             {/* @ts-expect-error A-Frame type definitions */}
@@ -320,7 +320,7 @@ function App() {
           {/* @ts-expect-error A-Frame type definitions */}
           <a-marker id="custom-marker-4" type="pattern" url="./markers/pattern4.patt">
             {/* @ts-expect-error A-Frame type definitions */}
-            <a-gltf-model src="./models/scene.gltf" scale="0.0025 0.0025 0.0025" position="0 0.5 0"></a-gltf-model>
+            <a-gltf-model src="./models/scene.gltf" scale="0.0075 0.0075 0.0075" position="0 0.5 0"></a-gltf-model>
             {/* @ts-expect-error A-Frame type definitions */}
             <a-box position="0 0.5 0" material="color: red;" rotation="0 45 0" visible="false"></a-box>
             {/* @ts-expect-error A-Frame type definitions */}
