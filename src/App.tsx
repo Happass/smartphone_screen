@@ -121,7 +121,7 @@ function App() {
           }
           
           // 強制的に再生を開始
-          videoElement.play().catch(e => console.log('Video play error:', e))
+          videoElement.play().catch((e: any) => console.log('Video play error:', e))
           
           // 少し待ってからAR.jsの再描画を促す
           setTimeout(() => {
