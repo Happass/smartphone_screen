@@ -20,8 +20,9 @@ interface CameraDevice {
 function App() {
   const [showAR, setShowAR] = useState(false)
   const [availableCameras, setAvailableCameras] = useState<CameraDevice[]>([])
-  const [, setCurrentCameraId] = useState<string | null>(null)
+  const [currentCameraId, setCurrentCameraId] = useState<string | null>(null)
   const [showCameraSelector, setShowCameraSelector] = useState(false)
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null)
   const [arStatus, setArStatus] = useState('初期化中...')
   const [detectedMarkers, setDetectedMarkers] = useState('なし')
   const [cameraStatus, setCameraStatus] = useState('確認中...')
@@ -58,6 +59,8 @@ function App() {
   // カメラ選択を適用
   const applyCameraSelection = async (cameraId: string) => {
     try {
+      console.log('カメラ切り替え開始:', cameraId)
+      
       const constraints = {
         video: {
           deviceId: { exact: cameraId },
@@ -69,20 +72,92 @@ function App() {
         }
       }
       
+      // 既存のストリームを停止
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop())
+      }
+      
       const stream = await navigator.mediaDevices.getUserMedia(constraints)
+      setCameraStream(stream)
       setCurrentCameraId(cameraId)
       setShowCameraSelector(false)
       
-      // AR.jsのカメラを更新
-      const scene = document.querySelector('a-scene') as any
-      if (scene && scene.components.arjs) {
-        const arjs = scene.components.arjs
-        if (arjs.videoElement) {
-          arjs.videoElement.srcObject = stream
+      // AR.jsのカメラを更新 - より強力な方法
+      const updateARJSCamera = () => {
+        const scene = document.querySelector('a-scene') as any
+        if (!scene) {
+          console.log('AR.js sceneが見つかりません')
+          return false
+        }
+
+        // 複数の方法でvideo要素を探す
+        let videoElement = scene.querySelector('video')
+        if (!videoElement) {
+          // AR.jsの内部構造を直接探す
+          const arjsComponent = scene.components?.arjs
+          if (arjsComponent?.videoElement) {
+            videoElement = arjsComponent.videoElement
+          }
+        }
+
+        if (videoElement) {
+          // 既存のストリームを停止
+          if (videoElement.srcObject) {
+            const oldStream = videoElement.srcObject as MediaStream
+            oldStream.getTracks().forEach(track => track.stop())
+          }
+          
+          // 新しいストリームを設定
+          videoElement.srcObject = stream
+          
+          // AR.jsの設定も更新
+          const arjsComponent = scene.components?.arjs
+          if (arjsComponent) {
+            arjsComponent.videoElement = videoElement
+            // AR.jsに再初期化を促す
+            if (arjsComponent.update) {
+              arjsComponent.update()
+            }
+          }
+          
+          // 強制的に再生を開始
+          videoElement.play().catch(e => console.log('Video play error:', e))
+          
+          // 少し待ってからAR.jsの再描画を促す
+          setTimeout(() => {
+            if (scene.renderer) {
+              scene.renderer.render(scene.object3D, scene.camera)
+            }
+          }, 100)
+          
+          console.log('AR.jsカメラ更新完了')
+          setCameraStatus(`カメラ切り替え完了: ${cameraId}`)
+          return true
+        } else {
+          console.log('AR.js video要素が見つかりません')
+          return false
         }
       }
+
+      // 即座に試行
+      if (!updateARJSCamera()) {
+        // 失敗した場合は複数回再試行
+        let retryCount = 0
+        const maxRetries = 5
+        const retryInterval = setInterval(() => {
+          retryCount++
+          if (updateARJSCamera() || retryCount >= maxRetries) {
+            clearInterval(retryInterval)
+            if (retryCount >= maxRetries) {
+              setCameraStatus('カメラ切り替え失敗: 最大再試行回数に達しました')
+            }
+          }
+        }, 300)
+      }
+      
     } catch (error) {
       console.error('カメラの切り替えに失敗しました:', error)
+      setCameraStatus('カメラ切り替え失敗')
       alert('カメラの切り替えに失敗しました: ' + (error as Error).message)
     }
   }
@@ -110,6 +185,12 @@ function App() {
 
   // AR機能を停止
   const stopAR = () => {
+    // カメラストリームを停止
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop())
+      setCameraStream(null)
+    }
+    
     setShowAR(false)
     setShowCameraSelector(false)
     setArStatus('初期化中...')
@@ -118,6 +199,7 @@ function App() {
     setModelStatus('読み込み中...')
     setRecognitionAccuracy('測定中...')
     setFrameRate(0)
+    setCurrentCameraId(null)
   }
 
   // AR.jsの初期化
@@ -282,6 +364,25 @@ function App() {
           >
             📷 カメラ選択
           </button>
+          <button
+            onClick={() => {
+              // AR.jsの強制再初期化
+              const scene = document.querySelector('a-scene') as any
+              if (scene && scene.components?.arjs) {
+                const arjs = scene.components.arjs
+                if (arjs.videoElement && cameraStream) {
+                  arjs.videoElement.srcObject = cameraStream
+                  arjs.videoElement.play()
+                  console.log('AR.js強制再初期化完了')
+                  setCameraStatus('AR.js再初期化完了')
+                }
+              }
+            }}
+            className="ar-button"
+            style={{backgroundColor: '#ff6b35'}}
+          >
+            🔄 再初期化
+          </button>
         </div>
 
         {/* カメラ選択器 */}
@@ -289,7 +390,12 @@ function App() {
           <div className="camera-selector">
             <h3>カメラを選択</h3>
             <select
-              onChange={(e) => applyCameraSelection(e.target.value)}
+              value={currentCameraId || ''}
+              onChange={(e) => {
+                if (e.target.value) {
+                  applyCameraSelection(e.target.value)
+                }
+              }}
             >
               <option value="">カメラを選択してください</option>
               {availableCameras.map((camera, index) => (
@@ -298,8 +404,12 @@ function App() {
                 </option>
               ))}
             </select>
+            <div className="mt-2 text-sm text-gray-300">
+              利用可能なカメラ: {availableCameras.length}台
+            </div>
             <button
               onClick={() => setShowCameraSelector(false)}
+              className="mt-3"
             >
               閉じる
             </button>
@@ -311,6 +421,9 @@ function App() {
           <div>AR.js Status: {arStatus}</div>
           <div>認識されたマーカー: {detectedMarkers}</div>
           <div>カメラ状態: {cameraStatus}</div>
+          <div>利用可能カメラ: {availableCameras.length}台</div>
+          <div>現在のカメラ: {currentCameraId ? '選択済み' : '未選択'}</div>
+          <div>ストリーム状態: {cameraStream ? 'アクティブ' : '停止'}</div>
           <div>3Dモデル状態: {modelStatus}</div>
           <div>認識精度: {recognitionAccuracy}</div>
           <div>フレームレート: {frameRate} FPS</div>
