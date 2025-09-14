@@ -1,3 +1,4 @@
+/* メイン画面のスタイル */
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -39,4 +40,211 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* AR画面のスタイル */
+.ar-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.ar-container body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow: hidden;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* A-Frame AR Scene */
+a-scene {
+  width: 100%;
+  height: 100%;
+}
+
+/* コントロールボタン */
+.ar-controls {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  gap: 10px;
+}
+
+.ar-button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.ar-button:hover {
+  background: #0056b3;
+  transform: scale(0.95);
+}
+
+.ar-button:active {
+  transform: scale(0.9);
+}
+
+.ar-button.green {
+  background: #28a745;
+}
+
+.ar-button.green:hover {
+  background: #218838;
+}
+
+/* カメラ選択器 */
+.camera-selector {
+  position: absolute;
+  top: 80px;
+  left: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 15px;
+  border-radius: 10px;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+}
+
+.camera-selector h3 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.camera-selector select {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.camera-selector select option {
+  background: #333;
+  color: white;
+}
+
+.camera-selector button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background: #6c757d;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.camera-selector button:hover {
+  background: #5a6268;
+}
+
+/* デバッグ情報 */
+.debug-info {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 15px;
+  border-radius: 10px;
+  z-index: 1000;
+  font-size: 12px;
+  line-height: 1.4;
+  backdrop-filter: blur(10px);
+  max-width: 300px;
+}
+
+.debug-info div {
+  margin-bottom: 5px;
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+  .ar-controls {
+    top: 15px;
+    right: 15px;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .ar-button {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+  
+  .camera-selector {
+    top: 70px;
+    left: 15px;
+    right: 15px;
+    padding: 12px;
+  }
+  
+  .debug-info {
+    top: 15px;
+    left: 15px;
+    padding: 12px;
+    font-size: 11px;
+    max-width: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ar-controls {
+    top: 10px;
+    right: 10px;
+  }
+  
+  .ar-button {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  
+  .camera-selector {
+    top: 60px;
+    left: 10px;
+    right: 10px;
+    padding: 10px;
+  }
+  
+  .debug-info {
+    top: 10px;
+    left: 10px;
+    padding: 10px;
+    font-size: 10px;
+    max-width: 200px;
+  }
 }
