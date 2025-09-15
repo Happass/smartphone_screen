@@ -494,7 +494,7 @@ function App() {
           {/* @ts-expect-error A-Frame type definitions */}
           <a-gltf-model 
             src="/models/scene.glb" 
-            scale="0.25 -0.25 0.25" 
+            scale="0.125 -0.125 0.125" 
             position="0 0 -2" 
             rotation="0 0 0" 
             id="ar-model"
