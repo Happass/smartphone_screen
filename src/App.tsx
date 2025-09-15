@@ -30,6 +30,8 @@ function App() {
   const [modelPosition, setModelPosition] = useState({ x: 0, y: 0, z: -2 });
   const [isDragging, setIsDragging] = useState(false);
   const [lastTouch, setLastTouch] = useState({ x: 0, y: 0 });
+  const [modelRotation, setModelRotation] = useState({ x: 0, y: 0, z: 0 });
+  const [quantumEnergy, setQuantumEnergy] = useState(98);
 
   // カメラデバイスを取得する関数
   const getCameraDevices = async () => {
@@ -195,6 +197,45 @@ function App() {
     }
   };
 
+  // カメラの向きに応じてモデルを回転させる関数
+  const updateModelRotation = () => {
+    const scene = document.querySelector("a-scene");
+    if (!scene) return;
+
+    const camera = scene.querySelector("a-entity[camera]");
+    if (!camera) return;
+
+    // カメラの回転を取得
+    const cameraRotation = camera.getAttribute("rotation");
+    if (cameraRotation) {
+      // モデルをカメラの反対方向を向かせる（水平を保つ）
+      // cameraRotationはstring型なので、分割してx, y, zを取得
+      let x = 0, y = 0;
+      if (typeof cameraRotation === "string") {
+        const parts = cameraRotation.split(" ");
+        x = Number(parts[0]);
+        y = Number(parts[1]);
+      } else if (typeof cameraRotation === "object" && cameraRotation !== null) {
+        // 万が一object型で来る場合も考慮
+        x = Number((cameraRotation as any).x);
+        y = Number((cameraRotation as any).y);
+      }
+      const newRotation = {
+        x: isNaN(x) ? 0 : -x,
+        y: isNaN(y) ? 0 : -y,
+        z: 0 // Z軸の回転は0に固定して水平を保つ
+      };
+
+      setModelRotation(newRotation);
+      
+      // 3Dモデルの回転を更新
+      const arModel = document.querySelector("a-gltf-model");
+      if (arModel) {
+        arModel.setAttribute("rotation", `${newRotation.x} ${newRotation.y} ${newRotation.z}`);
+      }
+    }
+  };
+
   // スワイプ操作で3Dオブジェクトを移動する関数
   const handleTouchStart = (e: React.TouchEvent) => {
     e.preventDefault();
@@ -224,6 +265,11 @@ function App() {
       const arModel = document.querySelector("a-gltf-model");
       if (arModel) {
         arModel.setAttribute("position", `${newPosition.x} ${newPosition.y} ${newPosition.z}`);
+        
+        // 位置変更後にカメラの向きに合わせてモデルの回転を更新
+        setTimeout(() => {
+          updateModelRotation();
+        }, 10);
       }
       
       return newPosition;
@@ -235,6 +281,12 @@ function App() {
   const handleTouchEnd = (e: React.TouchEvent) => {
     e.preventDefault();
     setIsDragging(false);
+    
+    // タッチ終了時にモデルの回転を更新
+    setTimeout(() => {
+      updateModelRotation();
+    }, 50);
+    
     console.log("タッチ終了");
   };
 
@@ -263,6 +315,11 @@ function App() {
       const arModel = document.querySelector("a-gltf-model");
       if (arModel) {
         arModel.setAttribute("position", `${newPosition.x} ${newPosition.y} ${newPosition.z}`);
+        
+        // 位置変更後にカメラの向きに合わせてモデルの回転を更新
+        setTimeout(() => {
+          updateModelRotation();
+        }, 10);
       }
       
       return newPosition;
@@ -274,6 +331,12 @@ function App() {
   const handleMouseUp = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsDragging(false);
+    
+    // マウス終了時にモデルの回転を更新
+    setTimeout(() => {
+      updateModelRotation();
+    }, 50);
+    
     console.log("マウス終了");
   };
 
@@ -385,6 +448,14 @@ function App() {
               camera.setAttribute("look-controls", "enabled: true; pointerLockEnabled: false; touchEnabled: true; reverseMouseDrag: false; reverseTouchDrag: false;");
               console.log("モーション追跡を再初期化しました");
               setArStatus("モーション追跡有効");
+              
+              // モデルの回転を定期的に更新
+              const rotationInterval = setInterval(() => {
+                updateModelRotation();
+              }, 100); // 100msごとに更新
+              
+              // クリーンアップ用にintervalを保存
+              (scene as any).rotationInterval = rotationInterval;
             }
           }, 2000);
         });
@@ -425,6 +496,14 @@ function App() {
               if (camera) {
                 camera.setAttribute("look-controls", "enabled: true; pointerLockEnabled: false; touchEnabled: true; reverseMouseDrag: false; reverseTouchDrag: false;");
                 console.log("カメラの向き追跡を再設定しました");
+                
+                // モデルの回転を定期的に更新
+                const rotationInterval = setInterval(() => {
+                  updateModelRotation();
+                }, 100); // 100msごとに更新
+                
+                // クリーンアップ用にintervalを保存
+                (scene as any).rotationInterval = rotationInterval;
               }
               
               // デバイスモーションイベントを監視
@@ -462,7 +541,7 @@ function App() {
           }
         };
 
-        // フレームレート監視
+        // フレームレート監視とSFデータ更新
         let frameCount = 0;
         let lastTime = performance.now();
         const frameRateInterval = setInterval(() => {
@@ -470,6 +549,9 @@ function App() {
           const deltaTime = currentTime - lastTime;
           const currentFrameRate = Math.round((frameCount * 1000) / deltaTime);
           setFrameRate(currentFrameRate);
+
+          // SF的なデータを動的に更新
+          setQuantumEnergy(prev => Math.max(85, Math.min(100, prev + (Math.random() - 0.5) * 2)));
 
           // AR状態をチェック
           checkARStatus();
@@ -500,6 +582,12 @@ function App() {
         return () => {
           clearInterval(checkARPlacement);
           clearInterval(frameRateInterval);
+          
+          // 回転更新のintervalを停止
+          if ((scene as any).rotationInterval) {
+            clearInterval((scene as any).rotationInterval);
+          }
+          
           // アニメーションループは自動的に停止される
         };
       }
@@ -522,79 +610,41 @@ function App() {
           userSelect: 'none'   // テキスト選択を無効化
         }}
       >
-        {/* コントロールボタン */}
-        <div className="ar-controls">
-          <button onClick={stopAR} className="ar-button">
-            ← 戻る
-          </button>
-          <button onClick={() => setShowCameraSelector(!showCameraSelector)} className="ar-button green">
-            📷 カメラ選択
-          </button>
-          <button
-            onClick={() => {
-              // AR.jsの強制再初期化
-              const scene = document.querySelector("a-scene") as any;
-              if (scene && scene.components?.arjs) {
-                const arjs = scene.components.arjs;
-                if (arjs.videoElement && cameraStream) {
-                  arjs.videoElement.srcObject = cameraStream;
-                  arjs.videoElement.play();
-                  console.log("AR.js強制再初期化完了");
-                  setCameraStatus("AR.js再初期化完了");
-                }
-              }
-            }}
-            className="ar-button"
-            style={{ backgroundColor: "#ff6b35" }}
-          >
-            🔄 再初期化
-          </button>
-        </div>
 
-
-        {/* カメラ選択器 */}
-        {showCameraSelector && (
-          <div className="camera-selector">
-            <h3>カメラを選択</h3>
-            <select
-              value={currentCameraId || ""}
-              onChange={(e) => {
-                if (e.target.value) {
-                  applyCameraSelection(e.target.value);
-                }
-              }}
-            >
-              <option value="">カメラを選択してください</option>
-              {availableCameras.map((camera, index) => (
-                <option key={camera.deviceId} value={camera.deviceId}>
-                  {camera.label || `カメラ ${index + 1}`}
-                </option>
-              ))}
-            </select>
-            <div className="mt-2 text-sm text-gray-300">利用可能なカメラ: {availableCameras.length}台</div>
-            <button onClick={() => setShowCameraSelector(false)} className="mt-3">
-              閉じる
-            </button>
+        {/* 量子ARシステム情報 */}
+        <div className="debug-info" style={{ 
+          background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%)',
+          border: '2px solid #00ffff',
+          borderRadius: '12px',
+          padding: '15px',
+          fontFamily: 'monospace',
+          boxShadow: '0 0 20px rgba(0, 255, 255, 0.3)',
+          backdropFilter: 'blur(10px)'
+        }}>
+          <div style={{ color: '#00ffff', fontSize: '16px', fontWeight: 'bold', marginBottom: '10px', textAlign: 'center' }}>
+            QUANTUM AR v2054
           </div>
-        )}
-
-        {/* デバッグ情報 */}
-        <div className="debug-info">
-          <div>AR.js Status: {arStatus}</div>
-          <div>3Dモデル状態: {detectedMarkers}</div>
-          <div>カメラ状態: {cameraStatus}</div>
-          <div>利用可能カメラ: {availableCameras.length}台</div>
-          <div>現在のカメラ: {currentCameraId ? "選択済み" : "未選択"}</div>
-          <div>ストリーム状態: {cameraStream ? "アクティブ" : "停止"}</div>
-          <div>モデル配置: {modelStatus}</div>
-          <div>操作: {recognitionAccuracy}</div>
-          <div>フレームレート: {frameRate} FPS</div>
-          <div>3Dモデル位置: X:{modelPosition.x.toFixed(1)} Y:{modelPosition.y.toFixed(1)} Z:{modelPosition.z.toFixed(1)}</div>
-          <div style={{ color: "#4CAF50", fontWeight: "bold" }}>📱 スマートフォンを動かして3Dオブジェクトが追従することを確認してください</div>
-          <div style={{ color: "#ff9800", fontWeight: "bold" }}>🔧 デバッグUIが有効です - 追跡状態を確認できます</div>
-          <div style={{ color: "#e91e63", fontWeight: "bold" }}>⬆️⬇️ 上下の動きを確認するには、スマートフォンを上下に傾けてください</div>
-          <div style={{ color: "#9c27b0", fontWeight: "bold" }}>👆 スワイプで3Dオブジェクトを上下左右に移動できます</div>
-          <div style={{ color: "#607d8b", fontWeight: "bold" }}>🎯 モーション追従とスワイプ操作の両方が利用可能です</div>
+          
+          <div style={{ color: '#00ff88', marginBottom: '6px' }}>
+            ⚡ Status: {arStatus === "AR.js 初期化完了" ? "ACTIVE" : "INIT"}
+          </div>
+          <div style={{ color: '#ff6b35', marginBottom: '6px' }}>
+            🧠 Hologram: {detectedMarkers === "3Dオブジェクト表示中" ? "ON" : "OFF"}
+          </div>
+          <div style={{ color: '#9c27b0', marginBottom: '6px' }}>
+            📡 Camera: {cameraStatus === "カメラ接続済み" ? "OK" : "SCAN"}
+          </div>
+          <div style={{ color: '#ff5722', marginBottom: '6px' }}>
+            ⚡ FPS: {frameRate}
+          </div>
+          
+          <div style={{ color: '#ff1744', marginBottom: '10px' }}>
+            ⚛️ Energy: {quantumEnergy.toFixed(0)}%
+          </div>
+          
+          <div style={{ color: "#00ff88", fontWeight: "bold", textAlign: 'center', fontSize: '12px' }}>
+            🌌 Move device • 👆 Swipe to control
+          </div>
         </div>
 
         {/* A-Frame AR Scene - Simple Overlay */}
@@ -628,7 +678,7 @@ function App() {
             src="/models/scene.glb" 
             scale="0.125 -0.125 0.125" 
             position={`${modelPosition.x} ${modelPosition.y} ${modelPosition.z}`}
-            rotation="0 0 0" 
+            rotation={`${modelRotation.x} ${modelRotation.y} ${modelRotation.z}`}
             id="ar-model"
           >
             {/* @ts-expect-error A-Frame type definitions */}
