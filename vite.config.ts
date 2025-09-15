@@ -15,8 +15,8 @@ export default defineConfig({
         description: 'AR Marker Recognition App with smartphone screen support',
         theme_color: '#646cff',
         background_color: '#ffffff',
-        display: 'standalone',
-        orientation: 'portrait',
+        display: 'minimal-ui',
+        orientation: 'any',
         scope: '/',
         start_url: '/',
         icons: [

@@ -10,6 +10,11 @@ const isMobile = () => {
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
 };
 
+// iPadかどうかを判定
+const isIPad = () => {
+  return /iPad/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+};
+
 // カメラデバイスの型定義
 interface CameraDevice {
   deviceId: string;
@@ -226,7 +231,20 @@ function App() {
     // モバイル用の初期設定
     if (isMobile()) {
       console.log("モバイルデバイスを検出しました");
-      if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+      
+      // iPad用の特別な処理
+      if (isIPad()) {
+        console.log("iPadを検出しました");
+        // iPadではPWAのフルスクリーンモードを避ける
+        document.body.style.webkitTransform = "translateZ(0)";
+        document.body.style.transform = "translateZ(0)";
+        document.body.style.willChange = "transform";
+        // iPad用のビューポート設定
+        const viewport = document.querySelector('meta[name="viewport"]');
+        if (viewport) {
+          viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=5.0, minimum-scale=1.0');
+        }
+      } else if (/iPhone|iPod/.test(navigator.userAgent)) {
         document.body.style.webkitTransform = "translateZ(0)";
         document.body.style.transform = "translateZ(0)";
         document.body.style.willChange = "transform";

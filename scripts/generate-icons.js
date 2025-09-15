@@ -37,4 +37,8 @@ fs.writeFileSync(path.join(publicDir, 'pwa-192x192.png'), icon192);
 const icon512 = generatePWAIcon(512);
 fs.writeFileSync(path.join(publicDir, 'pwa-512x512.png'), icon512);
 
+// Apple Touch Icon (180x180)
+const appleTouchIcon = generatePWAIcon(180);
+fs.writeFileSync(path.join(publicDir, 'apple-touch-icon.png'), appleTouchIcon);
+
 console.log('PWA icons generated successfully!');
