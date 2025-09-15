@@ -314,6 +314,19 @@ function App() {
             if (arjs.trackingMethod) {
               console.log("追跡方法:", arjs.trackingMethod);
             }
+            
+            // デバイスの動き追跡を強制的に有効化
+            if (arjs.videoElement) {
+              console.log("AR.js video element found");
+              // デバイスモーションイベントを監視
+              window.addEventListener('deviceorientation', (event) => {
+                console.log("デバイス向き変更:", event.alpha, event.beta, event.gamma);
+              });
+              
+              window.addEventListener('devicemotion', (event) => {
+                console.log("デバイス動き:", event.acceleration);
+              });
+            }
           }
         });
 
@@ -449,13 +462,14 @@ function App() {
           <div>操作: {recognitionAccuracy}</div>
           <div>フレームレート: {frameRate} FPS</div>
           <div style={{ color: "#4CAF50", fontWeight: "bold" }}>📱 スマートフォンを動かして3Dオブジェクトが追従することを確認してください</div>
+          <div style={{ color: "#ff9800", fontWeight: "bold" }}>🔧 デバッグUIが有効です - 追跡状態を確認できます</div>
         </div>
 
         {/* A-Frame AR Scene - Simple Overlay */}
         {/* @ts-expect-error A-Frame type definitions */}
         <a-scene 
           embedded 
-          arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false; trackingMethod: best; detectionMode: mono; matrixCodeType: 3x3; sourceWidth: 1280; sourceHeight: 720; displayWidth: 1280; displayHeight: 720; maxDetectionRate: 60;"
+          arjs="sourceType: webcam; debugUIEnabled: true; trackingMethod: best;"
           vr-mode-ui="enabled: false" 
           renderer="logarithmicDepthBuffer: true; colorManagement: true;"
         >
@@ -473,8 +487,8 @@ function App() {
           {/* Light */}
           {/* @ts-expect-error A-Frame type definitions */}
           <a-light type="ambient" color="#404040" intensity="0.6"></a-light>
-          {/* @ts-expect-error A-Frame type ions */}
-          <a-light type="directional" position="0 1 0" color="#ffffff" intensity="0.8"></a-light>
+          {/* @ts-expect-error A-Frame type definitions */}
+          <a-light type="directional" position="0 1 2" color="#ffffff" intensity="0.8"></a-light>
 
           {/* 3D Model overlaid on camera */}
           {/* @ts-expect-error A-Frame type definitions */}
