@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
+// @ts-ignore
+import { useRegisterSW } from 'virtual:pwa-register/react';
 
 // モバイルデバイスかどうかを判定
 const isMobile = () => {
@@ -32,6 +34,46 @@ function App() {
   const [lastTouch, setLastTouch] = useState({ x: 0, y: 0 });
   const [modelRotation, setModelRotation] = useState({ x: 0, y: 0, z: 0 });
   const [quantumEnergy, setQuantumEnergy] = useState(98);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+
+  // PWA更新通知
+  const {
+    needRefresh: [needRefresh, setNeedRefresh],
+    updateServiceWorker,
+  } = useRegisterSW({
+    onRegistered(r: any) {
+      console.log('SW Registered: ' + r);
+    },
+    onRegisterError(error: any) {
+      console.log('SW registration error', error);
+    },
+  });
+
+  // PWAインストールプロンプトの処理
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallPrompt(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`User response to the install prompt: ${outcome}`);
+      setDeferredPrompt(null);
+      setShowInstallPrompt(false);
+    }
+  };
 
   // カメラデバイスを取得する関数
   const getCameraDevices = async () => {
@@ -62,7 +104,7 @@ function App() {
   const applyCameraSelection = async (cameraId: string) => {
     try {
       console.log("カメラ切り替え開始:", cameraId);
-
+      
       const constraints = {
         video: {
           deviceId: { exact: cameraId },
@@ -73,7 +115,7 @@ function App() {
           aspectRatio: { ideal: 16 / 9 },
         },
       };
-
+      
       // 既存のストリームを停止
       if (cameraStream) {
         cameraStream.getTracks().forEach((track) => track.stop());
@@ -83,7 +125,7 @@ function App() {
       setCameraStream(stream);
       setCurrentCameraId(cameraId);
       setShowCameraSelector(false);
-
+      
       // AR.jsのカメラを更新 - より強力な方法
       const updateARJSCamera = () => {
         const scene = document.querySelector("a-scene") as any;
@@ -108,10 +150,10 @@ function App() {
             const oldStream = videoElement.srcObject as MediaStream;
             oldStream.getTracks().forEach((track) => track.stop());
           }
-
+          
           // 新しいストリームを設定
           videoElement.srcObject = stream;
-
+          
           // AR.jsの設定も更新
           const arjsComponent = scene.components?.arjs;
           if (arjsComponent) {
@@ -121,10 +163,10 @@ function App() {
               arjsComponent.update();
             }
           }
-
+          
           // 強制的に再生を開始
           videoElement.play().catch((e: any) => console.log("Video play error:", e));
-
+          
           // 少し待ってからAR.jsの再描画を促す
           setTimeout(() => {
             if (scene.renderer) {
@@ -180,7 +222,7 @@ function App() {
         console.log("デバイスモーション許可エラー:", error);
       }
     }
-
+    
     // モバイル用の初期設定
     if (isMobile()) {
       console.log("モバイルデバイスを検出しました");
@@ -189,7 +231,7 @@ function App() {
         document.body.style.transform = "translateZ(0)";
         document.body.style.willChange = "transform";
       }
-
+      
       if (/Android/.test(navigator.userAgent)) {
         document.body.style.transform = "translateZ(0)";
         document.body.style.willChange = "transform";
@@ -413,7 +455,7 @@ function App() {
         scene.addEventListener("loaded", () => {
           console.log("AR.js scene loaded");
           setArStatus("AR.js 初期化完了");
-
+          
           // テクスチャ品質の最適化
           const renderer = (scene as any).renderer;
           if (renderer) {
@@ -429,7 +471,7 @@ function App() {
             camera.setAttribute("toneMapping", "ACESFilmicToneMapping");
             console.log("環境光設定を最適化しました");
           }
-
+          
           // カメラ状態を確認
           const arjs = (scene as any).components.arjs;
           if (arjs && arjs.videoElement && arjs.videoElement.srcObject) {
@@ -555,7 +597,7 @@ function App() {
 
           // AR状態をチェック
           checkARStatus();
-
+          
           // リセット
           frameCount = 0;
           lastTime = currentTime;
@@ -565,7 +607,7 @@ function App() {
         const countFrame = () => {
           frameCount++;
         };
-
+        
         // アニメーションループでフレームをカウント
         const animate = () => {
           countFrame();
@@ -623,8 +665,8 @@ function App() {
         }}>
           <div style={{ color: '#00ffff', fontSize: '16px', fontWeight: 'bold', marginBottom: '10px', textAlign: 'center' }}>
             QUANTUM AR v2054
-          </div>
-          
+        </div>
+
           <div style={{ color: '#00ff88', marginBottom: '6px' }}>
             ⚡ Status: {arStatus === "AR.js 初期化完了" ? "ACTIVE" : "INIT"}
           </div>
@@ -636,7 +678,7 @@ function App() {
           </div>
           <div style={{ color: '#ff5722', marginBottom: '6px' }}>
             ⚡ FPS: {frameRate}
-          </div>
+            </div>
           
           <div style={{ color: '#ff1744', marginBottom: '10px' }}>
             ⚛️ Energy: {quantumEnergy.toFixed(0)}%
@@ -648,15 +690,15 @@ function App() {
         </div>
 
         {/* A-Frame AR Scene - Simple Overlay */}
-        {/* @ts-expect-error A-Frame type definitions */}
-        <a-scene 
-          embedded 
+          {/* @ts-expect-error A-Frame type definitions */}
+        <a-scene
+          embedded
           arjs="sourceType: webcam; debugUIEnabled: true; trackingMethod: best; detectionMode: mono; matrixCodeType: 3x3;"
           vr-mode-ui="enabled: false" 
           renderer="logarithmicDepthBuffer: true; colorManagement: true;"
         >
           {/* Camera with look controls enabled */}
-          {/* @ts-expect-error A-Frame type definitions */}
+           {/* @ts-expect-error A-Frame type definitions */}
           <a-entity 
             camera 
             look-controls="enabled: true; pointerLockEnabled: false; touchEnabled: true; reverseMouseDrag: false; reverseTouchDrag: false;"
@@ -667,9 +709,9 @@ function App() {
           </a-entity>
 
           {/* Light */}
-          {/* @ts-expect-error A-Frame type definitions */}
+             {/* @ts-expect-error A-Frame type definitions */}
           <a-light type="ambient" color="#404040" intensity="0.6"></a-light>
-          {/* @ts-expect-error A-Frame type definitions */}
+             {/* @ts-expect-error A-Frame type definitions */}
           <a-light type="directional" position="0 1 2" color="#ffffff" intensity="0.8"></a-light>
 
           {/* 3D Model overlaid on camera */}
@@ -705,17 +747,59 @@ function App() {
           <img src={reactLogo} className="h-24 p-6 transition-all duration-300 hover:drop-shadow-[0_0_2em_#61dafbaa] will-change-transform animate-spin-slow" alt="React logo" />
         </a>
       </div>
-
+      
       <h1 className="text-4xl font-bold mb-8 text-foreground">シンプル AR アプリ</h1>
-
+      
       <div className="p-8 bg-card rounded-lg shadow-lg mb-8">
         <button onClick={startAR} className="bg-blue-600 hover:bg-blue-700 text-white border-none px-8 py-4 rounded-lg text-base cursor-pointer mb-5 transition-colors duration-200 font-medium">
           🎯 AR体験を開始
         </button>
 
         <p className="text-muted-foreground mt-4">カメラの映像の上に3Dモデルを重ねて表示します</p>
-      </div>
+        
+        {/* PWAインストールプロンプト */}
+        {showInstallPrompt && (
+          <div className="mt-4 p-4 bg-blue-100 border border-blue-400 rounded-lg">
+            <p className="text-blue-800 mb-2">📱 アプリをホーム画面に追加できます</p>
+            <div className="flex gap-2">
+              <button
+                onClick={handleInstallClick}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm"
+              >
+                インストール
+              </button>
+              <button
+                onClick={() => setShowInstallPrompt(false)}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm"
+              >
+                後で
+              </button>
+            </div>
+          </div>
+        )}
 
+        {/* PWA更新通知 */}
+        {needRefresh && (
+          <div className="mt-4 p-4 bg-yellow-100 border border-yellow-400 rounded-lg">
+            <p className="text-yellow-800 mb-2">新しいバージョンが利用可能です</p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => updateServiceWorker(true)}
+                className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded text-sm"
+              >
+                更新
+              </button>
+              <button
+                onClick={() => setNeedRefresh(false)}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm"
+              >
+                後で
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+      
       <div className="bg-muted/50 p-6 rounded-lg mb-8">
         <h3 className="text-xl font-semibold mb-4 text-foreground">使用方法:</h3>
         <ul className="text-left max-w-2xl mx-auto space-y-2 text-foreground">
