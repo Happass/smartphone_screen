@@ -28,6 +28,8 @@ function App() {
   const [recognitionAccuracy, setRecognitionAccuracy] = useState("測定中...");
   const [frameRate, setFrameRate] = useState(0);
   const [modelPosition, setModelPosition] = useState({ x: 0, y: 0, z: -2 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [lastTouch, setLastTouch] = useState({ x: 0, y: 0 });
 
   // カメラデバイスを取得する関数
   const getCameraDevices = async () => {
@@ -193,21 +195,86 @@ function App() {
     }
   };
 
-  // タップ操作で3Dオブジェクトを移動する関数
-  const handleModelMove = (direction: 'up' | 'down') => {
+  // スワイプ操作で3Dオブジェクトを移動する関数
+  const handleTouchStart = (e: React.TouchEvent) => {
+    e.preventDefault();
+    const touch = e.touches[0];
+    setIsDragging(true);
+    setLastTouch({ x: touch.clientX, y: touch.clientY });
+    console.log("タッチ開始:", touch.clientX, touch.clientY);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - lastTouch.x;
+    const deltaY = touch.clientY - lastTouch.y;
+    
+    // スワイプの感度を調整（小さな値で細かい調整）
+    const sensitivity = 0.002;
+    
     setModelPosition(prev => {
-      const newY = direction === 'up' ? prev.y + 0.2 : prev.y - 0.2;
-      const newPosition = { ...prev, y: newY };
+      const newX = prev.x + (deltaX * sensitivity);
+      const newY = prev.y - (deltaY * sensitivity); // Y軸は反転（画面の上方向が3D空間の上方向）
+      const newPosition = { x: newX, y: newY, z: prev.z };
       
       // 3Dモデルの位置を更新
       const arModel = document.querySelector("a-gltf-model");
       if (arModel) {
         arModel.setAttribute("position", `${newPosition.x} ${newPosition.y} ${newPosition.z}`);
-        console.log(`3Dモデルを${direction === 'up' ? '上' : '下'}に移動:`, newPosition);
       }
       
       return newPosition;
     });
+    
+    setLastTouch({ x: touch.clientX, y: touch.clientY });
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    console.log("タッチ終了");
+  };
+
+  // マウス操作も対応（デスクトップ用）
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+    setLastTouch({ x: e.clientX, y: e.clientY });
+    console.log("マウス開始:", e.clientX, e.clientY);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    
+    const deltaX = e.clientX - lastTouch.x;
+    const deltaY = e.clientY - lastTouch.y;
+    
+    const sensitivity = 0.002;
+    
+    setModelPosition(prev => {
+      const newX = prev.x + (deltaX * sensitivity);
+      const newY = prev.y - (deltaY * sensitivity);
+      const newPosition = { x: newX, y: newY, z: prev.z };
+      
+      const arModel = document.querySelector("a-gltf-model");
+      if (arModel) {
+        arModel.setAttribute("position", `${newPosition.x} ${newPosition.y} ${newPosition.z}`);
+      }
+      
+      return newPosition;
+    });
+    
+    setLastTouch({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    console.log("マウス終了");
   };
 
   // シンプルなARの初期化
@@ -310,6 +377,16 @@ function App() {
 
           // シンプルなARの初期化
           initializeSimpleAR(scene);
+
+          // モーション追跡を確実に有効化
+          setTimeout(() => {
+            const camera = scene.querySelector("a-entity[camera]");
+            if (camera) {
+              camera.setAttribute("look-controls", "enabled: true; pointerLockEnabled: false; touchEnabled: true; reverseMouseDrag: false; reverseTouchDrag: false;");
+              console.log("モーション追跡を再初期化しました");
+              setArStatus("モーション追跡有効");
+            }
+          }, 2000);
         });
 
         // AR.jsの初期化完了を待つ
@@ -342,6 +419,14 @@ function App() {
             // デバイスの動き追跡を強制的に有効化
             if (arjs.videoElement) {
               console.log("AR.js video element found");
+              
+              // カメラの向き追跡を再設定
+              const camera = scene.querySelector("a-entity[camera]");
+              if (camera) {
+                camera.setAttribute("look-controls", "enabled: true; pointerLockEnabled: false; touchEnabled: true; reverseMouseDrag: false; reverseTouchDrag: false;");
+                console.log("カメラの向き追跡を再設定しました");
+              }
+              
               // デバイスモーションイベントを監視
               window.addEventListener('deviceorientation', (event) => {
                 console.log("デバイス向き変更 - Alpha:", event.alpha, "Beta:", event.beta, "Gamma:", event.gamma);
@@ -424,7 +509,19 @@ function App() {
   // AR画面のレンダリング
   const renderARScene = () => {
     return (
-      <div className="ar-container">
+      <div 
+        className="ar-container"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        style={{ 
+          touchAction: 'none', // ブラウザのデフォルトタッチ動作を無効化
+          userSelect: 'none'   // テキスト選択を無効化
+        }}
+      >
         {/* コントロールボタン */}
         <div className="ar-controls">
           <button onClick={stopAR} className="ar-button">
@@ -454,38 +551,6 @@ function App() {
           </button>
         </div>
 
-        {/* 3Dオブジェクト移動ボタン */}
-        <div className="model-controls" style={{ position: 'absolute', right: '20px', top: '50%', transform: 'translateY(-50%)', zIndex: 1000 }}>
-          <button 
-            onClick={() => handleModelMove('up')} 
-            className="ar-button"
-            style={{ 
-              display: 'block', 
-              marginBottom: '10px', 
-              backgroundColor: '#4CAF50',
-              fontSize: '24px',
-              width: '60px',
-              height: '60px',
-              borderRadius: '50%'
-            }}
-          >
-            ⬆️
-          </button>
-          <button 
-            onClick={() => handleModelMove('down')} 
-            className="ar-button"
-            style={{ 
-              display: 'block', 
-              backgroundColor: '#f44336',
-              fontSize: '24px',
-              width: '60px',
-              height: '60px',
-              borderRadius: '50%'
-            }}
-          >
-            ⬇️
-          </button>
-        </div>
 
         {/* カメラ選択器 */}
         {showCameraSelector && (
@@ -528,13 +593,15 @@ function App() {
           <div style={{ color: "#4CAF50", fontWeight: "bold" }}>📱 スマートフォンを動かして3Dオブジェクトが追従することを確認してください</div>
           <div style={{ color: "#ff9800", fontWeight: "bold" }}>🔧 デバッグUIが有効です - 追跡状態を確認できます</div>
           <div style={{ color: "#e91e63", fontWeight: "bold" }}>⬆️⬇️ 上下の動きを確認するには、スマートフォンを上下に傾けてください</div>
+          <div style={{ color: "#9c27b0", fontWeight: "bold" }}>👆 スワイプで3Dオブジェクトを上下左右に移動できます</div>
+          <div style={{ color: "#607d8b", fontWeight: "bold" }}>🎯 モーション追従とスワイプ操作の両方が利用可能です</div>
         </div>
 
         {/* A-Frame AR Scene - Simple Overlay */}
         {/* @ts-expect-error A-Frame type definitions */}
         <a-scene 
           embedded 
-          arjs="sourceType: webcam; debugUIEnabled: true; trackingMethod: best;"
+          arjs="sourceType: webcam; debugUIEnabled: true; trackingMethod: best; detectionMode: mono; matrixCodeType: 3x3;"
           vr-mode-ui="enabled: false" 
           renderer="logarithmicDepthBuffer: true; colorManagement: true;"
         >
